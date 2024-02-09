@@ -1,3 +1,5 @@
+// Todo: Separate components into their own files
+
 import { useState } from "react";
 
 const tempMovieData = [
@@ -61,7 +63,7 @@ export default function App() {
         <NumResults movies={movies} />
       </NavBar>
 
-      <Main>
+      <Main movies={movies}>
         <Box>
           <MovieList movies={movies} />
         </Box>
@@ -75,30 +77,13 @@ export default function App() {
   );
 }
 
+//Accepted children prop to circumvent prop drilling
 function NavBar({ children }) {
   return (
     <nav className="nav-bar">
       <Logo />
       {children}
     </nav>
-  );
-}
-
-function Main({ children }) {
-  return <main className="main">{children}</main>;
-}
-
-function Search() {
-  const [query, setQuery] = useState("");
-
-  return (
-    <input
-      className="search"
-      type="text"
-      placeholder="Search movies..."
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-    />
   );
 }
 
@@ -111,12 +96,29 @@ function Logo() {
   );
 }
 
+function Search() {
+  const [query, setQuery] = useState("");
+  return (
+    <input
+      className="search"
+      type="text"
+      placeholder="Search movies..."
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+    />
+  );
+}
+
 function NumResults({ movies }) {
   return (
     <p className="num-results">
       Found <strong>{movies.length}</strong> results
     </p>
   );
+}
+
+function Main({ children }) {
+  return <main className="main">{children}</main>;
 }
 
 function Box({ children }) {
@@ -127,50 +129,46 @@ function Box({ children }) {
       <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
         {isOpen ? "–" : "+"}
       </button>
-
       {isOpen && children}
     </div>
   );
 }
 
-//Handled by Box component
-/*
-function WatchedBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isOpen2, setIsOpen2] = useState(true);
+// function WatchedBox() {
+//   const [watched, setWatched] = useState(tempWatchedData);
+//   const [isOpen2, setIsOpen2] = useState(true);
 
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
-        </>
-      )}
-    </div>
-  );
-}
-*/
+//   return (
+//     <div className="box">
+//       <button
+//         className="btn-toggle"
+//         onClick={() => setIsOpen2((open) => !open)}
+//       >
+//         {isOpen2 ? "–" : "+"}
+//       </button>
+//       {isOpen2 && (
+//         <>
+//           <WatchedSummary watched={watched} />
+//           <WatchedMovieList watched={watched} />
+//         </>
+//       )}
+//     </div>
+//   );
+// }
 
 function MovieList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
-        <MovieCard movie={movie} key={movie.imbdID} />
+        <Movie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
   );
 }
 
-function MovieCard({ movie }) {
+function Movie({ movie }) {
   return (
-    <li key={movie.imdbID}>
+    <li>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -217,15 +215,15 @@ function WatchedMovieList({ watched }) {
   return (
     <ul className="list">
       {watched.map((movie) => (
-        <WatchedMovieCard movie={movie} key={movie.imdbID} />
+        <WatchedMovie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
   );
 }
 
-function WatchedMovieCard({ movie }) {
+function WatchedMovie({ movie }) {
   return (
-    <li>
+    <li key={movie.imdbID}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
